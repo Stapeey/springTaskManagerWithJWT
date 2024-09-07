@@ -41,6 +41,9 @@ public class AuthController {
 
     @PostMapping("/register")
     private ResponseEntity<String> register(@RequestBody AuthDto authDto){
+        if(authDto == null || authDto.getPassword() == null || authDto.getUsername() == null){
+            return new ResponseEntity<>("Provide username and password!", HttpStatus.BAD_REQUEST);
+        }
         if (userRepository.existsByUsername(authDto.getUsername())){
             return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
         }
@@ -54,6 +57,11 @@ public class AuthController {
 
     @PostMapping("/login")
     private ResponseEntity<TokenDto> login(@RequestBody AuthDto authDto) {
+        TokenDto checkResponse = new TokenDto();
+        if(authDto == null || authDto.getPassword() == null || authDto.getUsername() == null){
+            checkResponse.setMessage("Provide username and password");
+            return new ResponseEntity<>(checkResponse, HttpStatus.BAD_REQUEST);
+        }
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authDto.getUsername(), authDto.getPassword()));
             TokenDto response = new TokenDto();
@@ -63,9 +71,8 @@ public class AuthController {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
         }
         catch (BadCredentialsException e){
-            TokenDto response = new TokenDto();
-            response.setMessage("Wrong login information");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            checkResponse.setMessage("Wrong login information");
+            return new ResponseEntity<>(checkResponse, HttpStatus.UNAUTHORIZED);
         }
 
     }

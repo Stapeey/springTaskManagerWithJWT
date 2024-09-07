@@ -1,6 +1,7 @@
 package com.Stapi.task.Controllers;
 
 import com.Stapi.task.Dto.TaskDto;
+import com.Stapi.task.Exceptions.MissingFieldsException;
 import com.Stapi.task.models.Task;
 import com.Stapi.task.models.User;
 import com.Stapi.task.repositories.UserRepository;
@@ -42,9 +43,14 @@ public class TaskController {
 
     @PostMapping("/create")
     private ResponseEntity<String> Create(@RequestBody TaskDto taskDto){
+        if (taskDto == null || taskDto.getDeadline() == null || taskDto.getDescription() == null || taskDto.getStatus() == null){
+            throw new MissingFieldsException("provide correct details about the task");
+        }
+
         String response = taskService.createTask(taskDto, getUser());
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+
     }
 
     @PutMapping("/update")

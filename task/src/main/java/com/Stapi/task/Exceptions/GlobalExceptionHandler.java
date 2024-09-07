@@ -20,4 +20,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(MissingFieldsException.class)
+    public  ResponseEntity<ErrorObject> MissingFieldException(MissingFieldsException ex, WebRequest request){
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setMessage(ex.getMessage());
+        errorObject.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        errorObject.setTimestamp(new Date());
+
+        return new ResponseEntity<>(errorObject, HttpStatus.BAD_REQUEST);
+    }
 }

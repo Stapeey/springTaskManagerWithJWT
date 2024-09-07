@@ -1,6 +1,7 @@
 package com.Stapi.task.services;
 
 import com.Stapi.task.Dto.TaskDto;
+import com.Stapi.task.Exceptions.MissingFieldsException;
 import com.Stapi.task.Exceptions.TaskNotFoundException;
 import com.Stapi.task.models.Task;
 import com.Stapi.task.models.User;
@@ -27,10 +28,15 @@ public class TaskService {
 
     public String createTask(TaskDto taskDto, User user){
         Task task = new Task();
-        task.setDeadline(taskDto.getDeadline());
-        task.setDescription(taskDto.getDescription());
-        task.setStatus(taskDto.getStatus());
-        task.setUser(user);
+        try {
+            task.setDeadline(taskDto.getDeadline());
+            task.setDescription(taskDto.getDescription());
+            task.setStatus(taskDto.getStatus());
+            task.setUser(user);
+        }
+        catch (Exception ex){
+            throw new MissingFieldsException("Incomplete task sent in. try this format: deadline, description, status");
+        }
 
         Task saveTask = taskRepository.save(task);
 

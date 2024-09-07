@@ -1,14 +1,13 @@
 package com.Stapi.task.Dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Data
 public class TaskDto {
     private LocalDate deadline;

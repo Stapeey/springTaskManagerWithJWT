@@ -41,21 +41,26 @@ public class JWTAuthenticator extends OncePerRequestFilter {
         String token = header.substring(7);
 
         if(generateJWT.validate(token)){
-            String username = generateJWT.extractUsername(token);
-            UserDetails user = userDetailsService.loadUserByUsername(username);
-            //Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), null, new ArrayList<>()));
+            try {
+                String username = generateJWT.extractUsername(token);
+                UserDetails user = userDetailsService.loadUserByUsername(username);
+                //Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), null, new ArrayList<>()));
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user,
-                    null,
-                    new ArrayList<>()
-            );
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        user,
+                        null,
+                        new ArrayList<>()
+                );
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+            }
+            catch (Exception ex){
+                throw new AuthenticationCredentialsNotFoundException("Wrong or expired JWT");
+            }
         }
-        throw new AuthenticationCredentialsNotFoundException("Wrong or expired JWT");
+
     }
 }
